@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.40, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: proyectodaw
 -- ------------------------------------------------------
@@ -54,6 +54,26 @@ CREATE TABLE `books` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `copies`
+--
+
+DROP TABLE IF EXISTS `copies`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `copies` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `idBook` int(10) unsigned NOT NULL,
+  `code` varchar(45) NOT NULL,
+  `state` enum('available','borrowed') DEFAULT 'available',
+  `registration_date` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code_UNIQUE` (`code`),
+  KEY `fk_copies_books_idx` (`idBook`),
+  CONSTRAINT `fk_copies_books` FOREIGN KEY (`idBook`) REFERENCES `books` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `genres`
 --
 
@@ -67,6 +87,28 @@ CREATE TABLE `genres` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loans`
+--
+
+DROP TABLE IF EXISTS `loans`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `loans` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `idUser` int(10) unsigned NOT NULL,
+  `idCopie` int(10) unsigned NOT NULL,
+  `registration_date` timestamp NULL DEFAULT current_timestamp(),
+  `loan_date` date DEFAULT NULL,
+  `return_date` date DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_loans_users_idx` (`idUser`),
+  KEY `fk_loans_copies_idx` (`idCopie`),
+  CONSTRAINT `fk_loans_copies` FOREIGN KEY (`idCopie`) REFERENCES `copies` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `fk_loans_users` FOREIGN KEY (`idUser`) REFERENCES `users` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,4 +140,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-07  1:26:01
+-- Dump completed on 2025-10-07 21:35:10
